@@ -3,9 +3,13 @@ import { useState } from 'react'
 const App = () => {
   const [persons, setPersons] = useState([
     { name: 'Arto Hellas', number: '123456789' },
+    { name: 'Ada Lovelace', number: '987654321' },
+    { name: 'Dan Abramov', number: '5647382910' },
+    { name: 'Mary Poppendieck', number: '192837465' }
   ])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
+  const [filter, setFilter] = useState('')
 
   const handleAddPerson = (event) => {
     event.preventDefault()
@@ -31,6 +35,9 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <div>
+        filter shown with <input value={filter} onChange={(event) => setFilter(event.target.value)} />
+      </div>
       <form onSubmit={handleAddPerson}>
         <div>
           name: <input
@@ -45,7 +52,9 @@ const App = () => {
         </div>
       </form>
       <h2>Numbers</h2>
-      {persons.map(person => <p key={person.name}>{person.name}: {person.number}</p>)}
+      {persons
+        .filter(person => person.name.toLowerCase().includes(filter.toLowerCase()))
+        .map(person => <p key={person.name}>{person.name}: {person.number}</p>)}
     </div>
   )
 }
