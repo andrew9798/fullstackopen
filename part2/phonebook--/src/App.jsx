@@ -1,19 +1,26 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import React from 'react'
 import Filter from './Filter'
 import Form from './Form'
 import Persons from './Persons'
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: '123456789' },
-    { name: 'Ada Lovelace', number: '987654321' },
-    { name: 'Dan Abramov', number: '5647382910' },
-    { name: 'Mary Poppendieck', number: '192837465' }
-  ])
+  const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
+
+  useEffect(() => {
+    console.log('effect')
+    fetch('http://localhost:3001/persons')
+      .then(response => response.json())
+      .then(data => {
+        console.log('promise fulfilled')
+        setPersons(data)
+      })
+  }, [])
+
+  console.log('render', persons.length, 'persons')
 
   const handleAddPerson = (event) => {
     event.preventDefault()
