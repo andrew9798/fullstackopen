@@ -3,6 +3,7 @@ import React from 'react'
 import Filter from './Filter'
 import Form from './Form'
 import Persons from './Persons'
+import personService from './services/Persons'
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -10,14 +11,15 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
 
+
+
   useEffect(() => {
     console.log('effect')
-    fetch('http://localhost:3001/persons')
-      .then(response => response.json())
-      .then(data => {
-        console.log('promise fulfilled')
-        setPersons(data)
-      })
+    personService.getAll().then(initialPersons => {
+      setPersons(initialPersons)
+      console.log('promise fulfilled', initialPersons)
+    })
+
   }, [])
 
   console.log('render', persons.length, 'persons')
@@ -31,12 +33,17 @@ const App = () => {
       alert(`${newName} is already added to phonebook`)
       return
     }
-
-
     const personObject = {
       name: newName,
       number: newNumber,
     }
+
+    personService
+      .create(personObject)
+      .then(returnedPerson => {
+        setPersons(persons.concat(returnedPerson))
+      })
+      
     setPersons(persons.concat(personObject))
     setNewName('')
     setNewNumber('')
