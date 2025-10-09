@@ -59,7 +59,7 @@ const App = () => {
         setNewNumber={setNewNumber}
         handleAddPerson={handleAddPerson}
       />
-      <Persons persons={persons} filter={filter} />
+      <Persons persons={persons} filter={filter} setPersons={setPersons} />
     </div>
   )
 }
