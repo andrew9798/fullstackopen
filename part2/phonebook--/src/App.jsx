@@ -4,12 +4,14 @@ import Filter from './Filter'
 import Form from './Form'
 import Persons from './Persons'
 import personService from './services/Persons'
+import Notification from './Notification'
 
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
+  const [message, setMessage] = useState(null)
 
 
 
@@ -41,10 +43,16 @@ const App = () => {
         personService.update(nameExists.id, personObject)
           .then(returnedPerson => {
             setPersons(persons.map(person => person.id !== nameExists.id ? person : returnedPerson))
-          })
+            setMessage(
+              `Information of ${newName} has already been removed from server`
+            )
+            setTimeout(() => {
+              setMessage(null)
+            }, 5000)
+            setPersons(persons.filter(n => n.id !== nameExists.id))
+          })  
       }
-      setNewName('')
-      setNewNumber('')
+      
       return
     }
     const personObject = {
@@ -66,6 +74,7 @@ const App = () => {
   return (
     <div>     
       <Filter filter={filter} setFilter={setFilter} />
+      <Notification message={message} />
       <Form
         newName={newName}
         setNewName={setNewName}
