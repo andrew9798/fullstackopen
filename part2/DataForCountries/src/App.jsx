@@ -35,8 +35,7 @@ function App() {
             <p>Capital: {filteredCountries[0].capital}</p>
             <p>Area: {filteredCountries[0].area}</p>
             <h2>
-              Languages:
-             
+              Languages:           
             </h2>
              <ul>
                 {Object.entries(filteredCountries[0].languages).map(([code, name]) => (
@@ -51,7 +50,10 @@ function App() {
           </div>
         ) : (
           filteredCountries.map(country => (
-            <li key={country.cca3}>{country.name.common}</li>
+            <>
+            <li>{country.name.common}</li>
+            <button onClick={() => setSearchTerm(country.name.common)}>Show</button>
+            </>
           ))
         )}
       </ul>
