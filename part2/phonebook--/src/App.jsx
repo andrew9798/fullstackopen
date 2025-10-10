@@ -27,54 +27,61 @@ const App = () => {
   console.log('render', persons.length, 'persons')
 
   const handleAddPerson = (event) => {
-    event.preventDefault()
+  event.preventDefault()
 
-  
-    const nameExists = persons.find(person => person.name === newName)
-    console.log(nameExists.id)
+  const nameExists = persons.find(person => person.name === newName)
 
-    if (nameExists) {
-      const personObject = {
-      name: nameExists.name,
-      number: newNumber,
-    }
-
-      if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
-        personService.update(nameExists.id, personObject)
-          .then(returnedPerson => {
-            setPersons(persons.map(person => person.id !== nameExists.id ? person : returnedPerson))
-            setMessage(
-              `Information of ${newName} has already been removed from server`
-            )
-            setTimeout(() => {
-              setMessage(null)
-            }, 5000)
-            setPersons(persons.filter(n => n.id !== nameExists.id))
-          })  
-      }
-      
-      return
-    }
+  if (nameExists) {
     const personObject = {
-      name: newName,
+      ...nameExists, 
       number: newNumber,
     }
 
-    personService
-      .create(personObject)
-      .then(returnedPerson => {
-        setPersons(persons.concat(returnedPerson))
-      })
-      
-    setPersons(persons.concat(personObject))
-    setNewName('')
-    setNewNumber('')
+    if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
+      personService
+        .update(nameExists.id, personObject)
+        .then(returnedPerson => {
+          setPersons(persons.map(p => p.id !== nameExists.id ? p : returnedPerson))
+          console.log(`${newName} updated`)
+          setMessage(`Updated ${newName}'s number`)
+          setTimeout(() => setMessage(null), 5000)
+        })
+        .catch(error => {
+          setMessage({ text: `information of  ${newName} has already been removed from server`, type: 'error' })
+
+          setTimeout(() => setMessage(null), 5000)
+          setPersons(persons.filter(p => p.id !== nameExists.id))
+        })
+    }
+    return
   }
+
+  const personObject = {
+    name: newName,
+    number: newNumber,
+  }
+
+  personService
+    .create(personObject)
+    .then(returnedPerson => {
+      setPersons(persons.concat(returnedPerson))
+      setMessage({ text: `Added ${newName}`, type: 'success' })
+      setTimeout(() => setMessage(null), 5000)
+    })
+    .catch(error => {
+      setMessage({ text: `Failed to add ${newName}`, type: 'error' })
+      setTimeout(() => setMessage(null), 5000)
+    })
+
+  setNewName('')
+  setNewNumber('')
+}
+
 
   return (
     <div>     
       <Filter filter={filter} setFilter={setFilter} />
-      <Notification message={message} />
+      <Notification message={message}/>
       <Form
         newName={newName}
         setNewName={setNewName}
@@ -82,7 +89,7 @@ const App = () => {
         setNewNumber={setNewNumber}
         handleAddPerson={handleAddPerson}
       />
-      <Persons persons={persons} filter={filter} setPersons={setPersons} />
+      <Persons persons={persons} filter={filter} setPersons={setPersons} setMessage={setMessage} />
     </div>
   )
 }
